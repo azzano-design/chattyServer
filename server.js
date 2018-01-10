@@ -18,8 +18,16 @@ const wss = new SocketServer({ server });
 // When a client connects they are assigned a socket, represented by
 // the ws parameter in the callback.
 
+let userCount = 0;
+let systemMessage = {
+  type: 'system',
+  content: userCount + ' users online'
+}
+
 wss.on('connection', function connection(ws) {
-  console.log('Client connected');
+  console.log('Client connected. ' + (userCount += 1) + ' user[s] online.');
+  // ws.send(JSON.stringify(userCount));
+  // console.log(userCount);
 
   ws.on('message', function incoming(data) {
     const newData = JSON.parse(data);
@@ -29,7 +37,10 @@ wss.on('connection', function connection(ws) {
   });
 
   // Set up a callback for when a client closes the socket. This usually means they closed their browser.
-  ws.on('close', () => console.log('Client disconnected'));
+  ws.on('close', () => {
+    console.log('Client disconnected. ' + (userCount -= 1) + ' user[s] online.');
+    console.log(userCount);
+  });
 });
 
 wss.broadcast = function broadcast(data) {
