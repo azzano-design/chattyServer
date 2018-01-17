@@ -18,8 +18,7 @@ const wss = new SocketServer({ server });
 // When a client connects they are assigned a socket, represented by
 // the ws parameter in the callback.
 
-
-let userCount = 0;
+let userCount = 1;
 
 let systemMessage = {
   type: 'count',
@@ -42,18 +41,7 @@ wss.on('connection', function connection(ws) {
 
   ws.on('message', function incoming(data) {
     const newData = JSON.parse(data);
-    if (newData.type === 'count') {
-      newData.id = uuidv1();
-      console.log('Received count update');
-    }
-    else if (newData.type === 'system') {
-      newData.id = uuidv1();
-      console.log('Received system update');
-    }
-    else if (newData.type === 'message') {
-      newData.id = uuidv1();
-      console.log('Received message update');
-    }
+    newData.id = uuidv1();
     wss.broadcast(JSON.stringify(newData));
   });
 
